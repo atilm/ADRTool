@@ -126,6 +126,31 @@ fn toc_reports_warnings_but_exits_success() {
 }
 
 #[test]
+fn toc_warns_for_empty_author_value() {
+    let temp = assert_fs::TempDir::new().expect("temp dir");
+    init_repo(&temp);
+
+    temp.child("docs/adr/001-Empty-Author.md")
+        .write_str(
+            "# ADR001 - Empty Author\n\n* Date: 2026-07-01\n* Status: ACCEPTED\n* Author: \n* Labels: core\n",
+        )
+        .expect("write adr");
+
+    let mut cmd = Command::cargo_bin("adr").expect("binary exists");
+    cmd.current_dir(temp.path())
+        .arg("toc")
+        .assert()
+        .success()
+        .stderr(predicate::str::contains("warning:"))
+        .stderr(predicate::str::contains("empty author value"));
+
+    temp.child("docs/adr/adr-overview.md")
+        .assert(predicate::path::exists());
+
+    temp.close().expect("close temp dir");
+}
+
+#[test]
 fn toc_fails_when_marker_is_missing() {
     let temp = assert_fs::TempDir::new().expect("temp dir");
 

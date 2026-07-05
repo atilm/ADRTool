@@ -162,6 +162,8 @@ fn render_template(template: &str, id: &str, title: &str, date: &str) -> String 
         .replace("`TITLE`", title)
         .replace("`YYYY-MM-DD`", date)
         .replace("`STATUS`", "DRAFT")
+        .replace("`AUTHOR`", "")
+        .replace("`LABELS`", "")
 }
 
 fn format_id(id: u32) -> String {

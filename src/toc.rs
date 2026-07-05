@@ -552,6 +552,24 @@ mod tests {
     }
 
     #[test]
+    fn parse_adr_warns_for_empty_author_value() {
+        let content = "# ADR005 - Decision X\n\n* Date: 2026-07-05\n* Status: ACCEPTED\n* Author: \n* Labels: core\n";
+        let record = parse_adr(
+            5,
+            "005-Decision-X.md",
+            content,
+            default_statuses().as_slice(),
+        );
+
+        assert!(
+            record
+                .warnings
+                .iter()
+                .any(|warning| warning.contains("empty author value"))
+        );
+    }
+
+    #[test]
     fn parse_adr_accepts_superseded_by_id_status() {
         let content = "# ADR005 - Decision X\n\n* Date: 2026-07-05\n* Status: SUPERSEDED by 006\n* Author: Jane\n* Labels: \n";
         let record = parse_adr(
