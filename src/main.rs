@@ -1,5 +1,6 @@
 mod cli;
 mod init;
+mod modify;
 mod new;
 mod output;
 mod resolver;
@@ -40,9 +41,21 @@ fn main() -> ExitCode {
                 ExitCode::from(1)
             }
         },
-        cli::Commands::Mod { .. } => {
-            output.error("command not implemented yet");
-            ExitCode::from(1)
-        }
+        cli::Commands::Mod {
+            id,
+            accept,
+            supersede,
+        } => match modify::run(id, accept, supersede) {
+            Ok(result) => {
+                for warning in result.warnings {
+                    output.warning(warning.as_str());
+                }
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                output.error(&err.to_string());
+                ExitCode::from(1)
+            }
+        },
     }
 }

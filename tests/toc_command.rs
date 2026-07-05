@@ -87,7 +87,10 @@ fn toc_applies_required_status_styles_and_labels() {
 
     assert!(overview.contains("**[ADR001 - Draft](001-Draft.md)** (alpha, beta)"));
     assert!(overview.contains("**[ADR002 - Proposed](002-Proposed.md)** (proposal)"));
-    assert!(overview.contains("~~[ADR003 - Superseded](003-Superseded.md)~~ (history) superseded by 004"));
+    assert!(
+        overview
+            .contains("~~[ADR003 - Superseded](003-Superseded.md)~~ (history) superseded by 004")
+    );
     assert!(overview.contains("~~[ADR004 - Expired](004-Expired.md)~~ expired"));
 
     temp.close().expect("close temp dir");
