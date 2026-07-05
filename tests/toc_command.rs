@@ -39,9 +39,15 @@ fn toc_regenerates_overview_sorted_and_listed() {
     overview_path.assert(predicate::path::exists());
     let overview = fs::read_to_string(overview_path.path()).expect("read overview");
 
-    let first_idx = overview.find("ADR001 - First").expect("first entry");
-    let second_idx = overview.find("ADR002 - Second").expect("second entry");
-    let tenth_idx = overview.find("ADR010 - Tenth").expect("tenth entry");
+    let first_idx = overview
+        .find("[ADR001 - First](001-First.md)")
+        .expect("first entry");
+    let second_idx = overview
+        .find("[ADR002 - Second](002-Second.md)")
+        .expect("second entry");
+    let tenth_idx = overview
+        .find("[ADR010 - Tenth](010-Tenth.md)")
+        .expect("tenth entry");
     assert!(first_idx < second_idx && second_idx < tenth_idx);
 
     temp.close().expect("close temp dir");
@@ -79,13 +85,10 @@ fn toc_applies_required_status_styles_and_labels() {
     let overview =
         fs::read_to_string(temp.child("docs/adr/adr-overview.md").path()).expect("read overview");
 
-
-    print!("Overview content:\n{}", overview);
-
-    assert!(overview.contains("**ADR001 - Draft** (alpha, beta)"));
-    assert!(overview.contains("**ADR002 - Proposed** (proposal)"));
-    assert!(overview.contains("~~ADR003 - Superseded~~ (history) superseded by 004"));
-    assert!(overview.contains("~~ADR004 - Expired~~ expired"));
+    assert!(overview.contains("**[ADR001 - Draft](001-Draft.md)** (alpha, beta)"));
+    assert!(overview.contains("**[ADR002 - Proposed](002-Proposed.md)** (proposal)"));
+    assert!(overview.contains("~~[ADR003 - Superseded](003-Superseded.md)~~ (history) superseded by 004"));
+    assert!(overview.contains("~~[ADR004 - Expired](004-Expired.md)~~ expired"));
 
     temp.close().expect("close temp dir");
 }

@@ -348,14 +348,15 @@ fn render_overview(records: &[AdrRecord]) -> String {
     for record in records {
         let title = record.title.as_deref().unwrap_or("(missing title)");
         let title_text = format!("ADR{:03} - {}", record.id, title);
+        let linked_title = format!("[{title_text}]({})", record.file_name);
 
         let status = record.status.as_deref().unwrap_or("UNKNOWN");
         let labels_text = normalize_labels(record.labels.as_deref().unwrap_or(""));
         let style = style_for_status(status);
         let decorated = match style {
-            RenderStyle::Bold => format!("**{title_text}**"),
-            RenderStyle::Strike => format!("~~{title_text}~~"),
-            RenderStyle::Plain => title_text,
+            RenderStyle::Bold => format!("**{linked_title}**"),
+            RenderStyle::Strike => format!("~~{linked_title}~~"),
+            RenderStyle::Plain => linked_title,
         };
 
         let suffix = if status.trim() == "EXPIRED" {
@@ -644,9 +645,9 @@ mod tests {
 
         let out = render_overview(records.as_slice());
 
-        assert!(out.contains("- **ADR001 - A** (api)"));
-        assert!(out.contains("- ~~ADR002 - B~~ (security) superseded by 003"));
-        assert!(out.contains("- ~~ADR003 - C~~ expired"));
+        assert!(out.contains("- **[ADR001 - A](001-a.md)** (api)"));
+        assert!(out.contains("- ~~[ADR002 - B](002-b.md)~~ (security) superseded by 003"));
+        assert!(out.contains("- ~~[ADR003 - C](003-c.md)~~ expired"));
     }
 
     #[test]
