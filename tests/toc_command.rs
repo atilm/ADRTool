@@ -79,10 +79,13 @@ fn toc_applies_required_status_styles_and_labels() {
     let overview =
         fs::read_to_string(temp.child("docs/adr/adr-overview.md").path()).expect("read overview");
 
+
+    print!("Overview content:\n{}", overview);
+
     assert!(overview.contains("**ADR001 - Draft** (alpha, beta)"));
     assert!(overview.contains("**ADR002 - Proposed** (proposal)"));
     assert!(overview.contains("~~ADR003 - Superseded~~ (history) superseded by 004"));
-    assert!(overview.contains("~~ADR004 - Expired~~ (none) expired"));
+    assert!(overview.contains("~~ADR004 - Expired~~ expired"));
 
     temp.close().expect("close temp dir");
 }

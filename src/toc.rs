@@ -368,9 +368,10 @@ fn render_overview(records: &[AdrRecord]) -> String {
 
         out.push_str("- ");
         out.push_str(decorated.as_str());
-        out.push_str(" (");
-        out.push_str(labels_text.as_str());
-        out.push(')');
+        if !labels_text.is_empty() {
+            out.push(' ');
+            out.push_str(labels_text.as_str());
+        }
         out.push_str(suffix.as_str());
         out.push('\n');
     }
@@ -386,9 +387,9 @@ fn normalize_labels(raw_labels: &str) -> String {
         .collect();
 
     if labels.is_empty() {
-        "none".to_string()
+        "".to_string()
     } else {
-        labels.join(", ")
+        format!("({})", labels.join(", "))
     }
 }
 
@@ -645,7 +646,7 @@ mod tests {
 
         assert!(out.contains("- **ADR001 - A** (api)"));
         assert!(out.contains("- ~~ADR002 - B~~ (security) superseded by 003"));
-        assert!(out.contains("- ~~ADR003 - C~~ (none) expired"));
+        assert!(out.contains("- ~~ADR003 - C~~ expired"));
     }
 
     #[test]
