@@ -74,13 +74,14 @@ Behavior:
 
 Required effects:
 1. Determine next free ADR ID.
-2. Create a file `<adr-directory>/<id>-<adr-title>.md` with content of the `.adr-template` where the following place holders have been replaced
+2. Pad the IDs with zeros so that they have 3 places. E.g. `003`
+3. Create a file `<adr-directory>/<id>-<adr-title>.md` with content of the `.adr-template` where the following place holders have been replaced
    - `ID` 
    - `TITLE`
    - `YYYY-MM-DD`
    - `STATUS`
-3. New ADR status is `DRAFT`.
-4. Spaces in the given title are replaced with dashes `-`
+4. New ADR status is `DRAFT`.
+5. Spaces in the given title are replaced with dashes `-`
 
 Acceptance criteria:
 1. Given existing ADR files with IDs `1`, `2`, and `4`, when `adr new "Decision X"` is run, then a new file with the ID `5` is created, because the ID policy is `max + 1` .

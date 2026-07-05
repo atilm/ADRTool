@@ -1,7 +1,7 @@
 mod cli;
 mod init;
+mod new;
 mod output;
-#[allow(dead_code)]
 mod resolver;
 mod template;
 
@@ -20,7 +20,14 @@ fn main() -> ExitCode {
                 ExitCode::from(1)
             }
         },
-        cli::Commands::New { .. } | cli::Commands::Mod { .. } | cli::Commands::Toc => {
+        cli::Commands::New { title } => match new::run(&title) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(err) => {
+                output.error(&err.to_string());
+                ExitCode::from(1)
+            }
+        },
+        cli::Commands::Mod { .. } | cli::Commands::Toc => {
             output.error("command not implemented yet");
             ExitCode::from(1)
         }

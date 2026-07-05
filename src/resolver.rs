@@ -44,12 +44,11 @@ fn resolve_marker_path(marker_path: &Path) -> Result<ResolvedAdrDirectory, Resol
         .parent()
         .expect("marker file path should always have a parent")
         .to_path_buf();
-    let marker_contents = fs::read_to_string(marker_path).map_err(|source| {
-        ResolveError::ReadMarker {
+    let marker_contents =
+        fs::read_to_string(marker_path).map_err(|source| ResolveError::ReadMarker {
             path: path_string(marker_path),
             source,
-        }
-    })?;
+        })?;
     let relative_path = marker_contents.trim();
     let adr_directory = marker_directory.join(relative_path);
 
@@ -81,8 +80,8 @@ fn path_string(path: &Path) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use assert_fs::prelude::*;
     use assert_fs::TempDir;
+    use assert_fs::prelude::*;
 
     #[test]
     fn resolves_marker_in_current_directory() {
