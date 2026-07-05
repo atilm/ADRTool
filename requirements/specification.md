@@ -34,7 +34,7 @@ Out of scope:
 ## 4.1 `adr -h`
 
 Behavior:
-- Display documentation for available commands.
+- Display documentation for available commands and subcommands.
 
 Acceptance criteria:
 1. Given the user runs `adr -h`, when the command executes, then help text is printed and the process exits successfully.
@@ -50,7 +50,8 @@ Required effects:
 2. Write the path to `<adr-directory>` into `.adr-directory`, as a path relative to the marker file location.
 3. Create the ADR directory itself.
 4. Create `<adr-directory>/.adr-template`.
-5. Create `<adr-directory>/.adr-status` with exactly:
+5. The template looks like [Template-File](.adr-template.md)
+6. Create `<adr-directory>/.adr-status` with exactly:
    - `DRAFT`
    - `PROPOSED`
    - `ACCEPTED`
@@ -63,6 +64,8 @@ Acceptance criteria:
 2. Given initialization succeeds, `docs/adr` exists and contains `.adr-template` and `.adr-status`.
 3. Given initialization succeeds, `.adr-status` contains exactly the six status values listed above, one per line.
 4. Given a non-init command is run from the marker directory or any subdirectory, the tool searches upward for `.adr-directory` and resolves the ADR directory using the path stored in that marker file.
+5. Given `.adr-directory` already exists, when `adr init docs/adr` is run, then `.adr-directory` is overwritten
+6. Given `<adr-directory>/.adr-template` or `<adr-directory>/.adr-status` already exist, when `adr init docs/adr` is run, these files are not overwritten
 
 ## 4.3 `adr new "<adr title>"`
 
@@ -71,13 +74,20 @@ Behavior:
 
 Required effects:
 1. Determine next free ADR ID.
-2. Create a file `<adr-directory>/<id>-<adr-title>.md`.
+2. Create a file `<adr-directory>/<id>-<adr-title>.md` with content of the `.adr-template` where the following place holders have been replaced
+   - `ID` 
+   - `TITLE`
+   - `YYYY-MM-DD`
+   - `STATUS`
 3. New ADR status is `DRAFT`.
+4. Spaces in the given title are replaced with dashes `-`
 
 Acceptance criteria:
-1. Given existing ADR files with IDs `1`, `2`, and `4`, when `adr new "Decision X"` is run, then a new file with the next auto-incremented ID is created according to the defined ID policy (see open questions).
+1. Given existing ADR files with IDs `1`, `2`, and `4`, when `adr new "Decision X"` is run, then a new file with the ID `5` is created, because the ID policy is `max + 1` .
 2. Given `adr new "Decision X"` succeeds, created ADR metadata status is `DRAFT`.
 3. Given ADR directory cannot be resolved from `.adr-directory`, `adr new` fails with a non-zero exit code.
+4. Given existing ADR files with IDs `1`, `2`, and `4`, when `adr new "Decision X"` is run, then a new file `005-Decision-X.md` is created.
+5. Given an ADR title with characters which cannot be used in file names, then the application exists with an error.
 
 ## 4.4 `adr mod <id> -a`
 
@@ -100,31 +110,42 @@ Behavior:
 
 Required effects:
 1. Set status of ADR `<id>` to `ACCEPTED`.
-2. Set status of ADR `<id-to-supersede>` to `SUPERSEDED by <id>`.
-3. Update date (scope of date update is ambiguous; see open questions).
+2. Set status of ADR `<id-to-supersede>` to `SUPERSEDED` and append as additional information `by <id>` in the same line.
+3. Update date of only the ADR `<id>` not of ADR `<id-to-supersede>`
 
 Acceptance criteria:
 1. Given both ADRs exist, when `adr mod <id> -s <id-to-supersede>` is run, then ADR `<id>` status becomes `ACCEPTED`.
 2. Given both ADRs exist, ADR `<id-to-supersede>` is marked as superseded by `<id>` in a format consistent with metadata and TOC rendering rules.
-3. Given one or both IDs do not exist, command fails with non-zero exit code.
+3. Given both ADRs exist, when `adr mod <id> -s <id-to-supersede>` is run, the date inADR `<id>` is updated and the date in  `<id-to-supersede>` remains the same
+4. Given one or both IDs do not exist, command fails with non-zero exit code.
 
 ## 4.6 `adr toc`
 
 Behavior:
 - Regenerate `<adr-directory>/adr-overview.md`.
-- This generation is also triggered automatically by modifying commands.
+- This generation is also triggered automatically by modifying commands (i.e. new and mod).
 
 Required overview rendering:
 1. Include links to all ADRs.
-2. Render ADRs with status `DRAFT` and `PROPOSED` in bold.
-3. Render superseded ADRs with strike-through and mention the superseding ADR.
-4. Render `EXPIRED` ADRs with strike-through and mark as `expired`.
-5. Show ADR labels.
+2. Sort links to ADRs by ID.
+3. Render ADRs with status `DRAFT` and `PROPOSED` in bold. No additional marker text needed.
+4. Render superseded ADRs with strike-through and mention the superseding ADR.
+5. Render `EXPIRED` ADRs with strike-through and mark as `expired`.
+6. Show ADR labels.
 
 Required checks during TOC generation:
-1. Detect missing IDs in sequence of existing ADR IDs.
-2. Validate IDs inside ADR documents match IDs in file names.
-3. Validate metadata lines exist and values are valid for: title, date, status, author, labels.
+1. Detect missing IDs in sequence of existing ADR IDs. Missing IDs result in warnings.
+2. Validate IDs inside ADR documents match IDs in file names. Mismatches result in warnings.
+3. Validate metadata lines exist and values are valid for: title, date, status, author, labels. Findings should result in warnings.
+4. Format of the meta data is the following
+   ```
+   # ADR`ID` - `TITLE`
+
+   * Date: `YYYY-MM-DD`
+   * Status: `STATUS`
+   * Author: `AUTHOR`
+   * Labels: `comma-sperated list of labels`
+   ```
 
 Acceptance criteria:
 1. Given ADR files exist, when `adr toc` runs successfully, then `adr-overview.md` is regenerated.
@@ -137,6 +158,8 @@ Acceptance criteria:
 ## 5. Global Resolution Rules
 
 1. For all commands except `init`, ADR directory resolution is performed by searching the current directory and then parent directories for `.adr-directory`.
+   1. When no `.adr-directory` can be found this is an error and should be reported to the user.
+   2. When the path in `.adr-directory` does not exist, this is an error and should be reported to the user.
 2. The path stored in `.adr-directory` is interpreted as relative to the directory containing `.adr-directory`.
 3. If no valid `.adr-directory` can be resolved, the command fails.
 
@@ -145,50 +168,7 @@ Acceptance criteria:
 Minimum behavior:
 - On unrecoverable command failure, exit with non-zero status.
 - On successful command completion, exit with zero status.
+- On command completion with only errors, exit with zero status.
 
-Formatting of warnings/errors, warning-only conditions, and exact exit code taxonomy are undefined in the usage guide.
-
-## 7. Open Questions and Inconsistencies to Resolve Before Implementation
-
-1. Superseded status naming inconsistency.
-- `init` status list contains `SUPERSEDED`.
-- `mod -s` behavior says status becomes `SUPERSEDED by <id>`.
-- TOC section uses `SUPERSED` (likely typo).
-- Decision needed: canonical metadata representation for superseded ADRs.
-
-2. ID auto-increment policy is not explicit.
-- `adr new` says auto-incremented ID, but does not define whether to use `max + 1` or smallest missing positive integer.
-
-3. Date update scope in `mod -s` is ambiguous.
-- Text says `update the date` without defining whether one ADR or both ADRs must be updated.
-
-4. Initialization overwrite behavior is undefined.
-- If `.adr-directory`, ADR directory, `.adr-template`, or `.adr-status` already exist, expected behavior is not specified.
-
-5. ADR file title slug rules are undefined.
-- No normalization rules for spaces, punctuation, casing, unicode, or duplicate resulting filenames are defined.
-
-6. ADR metadata format is not fully specified.
-- Required fields are listed, but exact line format, parser rules, and allowed date format are not defined.
-
-7. Missing marker or invalid marker behavior details are incomplete.
-- It is clear this is an error, but message format and distinction between missing marker vs invalid target path are undefined.
-
-8. TOC ordering is unspecified.
-- Not defined whether entries are sorted by ID, date, status, or file system order.
-
-9. Severity of consistency check findings is unspecified.
-- Missing ID sequence might be warning or error; guide does not define whether command should fail.
-
-10. Scope of automatic TOC regeneration needs explicit command list.
-- Guide says modifying commands trigger TOC automatically, but does not explicitly list whether this includes only `new` and `mod`, or any future modifiers.
-
-11. Behavior of `adr -h` output depth is unspecified.
-- Not defined whether subcommand help (for example `adr mod -h`) is required.
-
-12. Terminology for "ToDos" is presentation-only.
-- Bold formatting for `DRAFT` and `PROPOSED` is defined, but whether additional marker text is needed is undefined.
-
-## 8. Recommended Next Step
-
-Before implementation, produce a short "decisions" addendum resolving all open points above. After that, these acceptance criteria can be converted directly into integration tests.
+- Format warnings in yellow
+- Format errors in re
