@@ -171,4 +171,4 @@ Minimum behavior:
 - On command completion with only errors, exit with zero status.
 
 - Format warnings in yellow
-- Format errors in re
+- Format errors in red

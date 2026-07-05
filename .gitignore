@@ -64,3 +64,8 @@ vendor/
 coverage/
 .cache/
 tmp/
+
+
+# Added by cargo
+
+/target
