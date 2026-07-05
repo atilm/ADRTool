@@ -18,4 +18,12 @@ impl Output {
             eprintln!("error: {message}");
         }
     }
+
+    pub fn warning(&self, message: &str) {
+        if self.stderr_is_tty {
+            eprintln!("\x1b[33mwarning:\x1b[0m {message}");
+        } else {
+            eprintln!("warning: {message}");
+        }
+    }
 }

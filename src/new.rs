@@ -1,4 +1,5 @@
 use crate::resolver;
+use crate::toc;
 use chrono::Local;
 use std::fs;
 use std::fs::OpenOptions;
@@ -86,6 +87,7 @@ fn create_file(path: &Path, content: &str) -> Result<(), NewError> {
 }
 
 fn trigger_toc_regeneration(_adr_directory: &Path) -> Result<(), TocTriggerError> {
+    toc::run_for_directory(_adr_directory).map_err(|_| TocTriggerError)?;
     Ok(())
 }
 

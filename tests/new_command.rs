@@ -174,6 +174,8 @@ fn new_keeps_succeeding_with_toc_trigger_hook_enabled() {
 
     temp.child("docs/adr/001-Hook-Smoke.md")
         .assert(predicate::path::exists());
+    temp.child("docs/adr/adr-overview.md")
+        .assert(predicate::path::exists());
 
     temp.close().expect("close temp dir");
 }

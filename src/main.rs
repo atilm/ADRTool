@@ -4,6 +4,7 @@ mod new;
 mod output;
 mod resolver;
 mod template;
+mod toc;
 
 use clap::Parser;
 use std::process::ExitCode;
@@ -27,7 +28,19 @@ fn main() -> ExitCode {
                 ExitCode::from(1)
             }
         },
-        cli::Commands::Mod { .. } | cli::Commands::Toc => {
+        cli::Commands::Toc => match toc::run() {
+            Ok(result) => {
+                for warning in result.warnings {
+                    output.warning(warning.message.as_str());
+                }
+                ExitCode::SUCCESS
+            }
+            Err(err) => {
+                output.error(&err.to_string());
+                ExitCode::from(1)
+            }
+        },
+        cli::Commands::Mod { .. } => {
             output.error("command not implemented yet");
             ExitCode::from(1)
         }
