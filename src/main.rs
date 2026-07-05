@@ -1,6 +1,8 @@
 mod cli;
 mod init;
 mod output;
+#[allow(dead_code)]
+mod resolver;
 mod template;
 
 use clap::Parser;
