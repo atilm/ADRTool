@@ -31,7 +31,7 @@ jobs:
             asset_name: adr-windows-x86_64.exe
     steps:
       - name: Check out tagged commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
 
@@ -55,7 +55,7 @@ jobs:
           cp "${{ matrix.binary_path }}" "dist/${{ matrix.asset_name }}"
 
       - name: Upload release asset
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.asset_name }}
           path: dist/${{ matrix.asset_name }}
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download release assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist
           merge-multiple: true
