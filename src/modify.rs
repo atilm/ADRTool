@@ -1,3 +1,4 @@
+use crate::id::format_id;
 use crate::resolver;
 use crate::toc;
 use chrono::Local;
@@ -12,8 +13,8 @@ const STATUS_PREFIX: &str = "* Status:";
 pub enum ModError {
     #[error("at least one modifier must be provided: use '-a' or '-s <id>'")]
     MissingAction,
-    #[error("cannot supersede ADR '{id:03}' with itself")]
-    SupersedeSelf { id: u32 },
+    #[error("cannot supersede ADR '{id}' with itself")]
+    SupersedeSelf { id: String },
     #[error("failed to resolve ADR directory: {0}")]
     ResolveAdrDirectory(#[source] resolver::ResolveError),
     #[error("failed to read ADR directory '{path}': {source}")]
@@ -26,11 +27,11 @@ pub enum ModError {
         path: String,
         source: std::io::Error,
     },
-    #[error("ADR '{id:03}' not found in directory '{directory}'")]
-    AdrNotFound { id: u32, directory: String },
-    #[error("multiple ADR files found for id '{id:03}': '{first}' and '{second}'")]
+    #[error("ADR '{id}' not found in directory '{directory}'")]
+    AdrNotFound { id: String, directory: String },
+    #[error("multiple ADR files found for id '{id}': '{first}' and '{second}'")]
     DuplicateAdrId {
-        id: u32,
+        id: String,
         first: String,
         second: String,
     },
@@ -75,7 +76,9 @@ pub fn run(id: u32, accept: bool, supersede: Option<u32>) -> Result<ModResult, M
     if let Some(superseded_id) = supersede
         && superseded_id == id
     {
-        return Err(ModError::SupersedeSelf { id });
+        return Err(ModError::SupersedeSelf {
+            id: format_id(id),
+        });
     }
 
     let resolved = resolver::resolve_current_dir().map_err(ModError::ResolveAdrDirectory)?;
@@ -177,7 +180,7 @@ fn find_adr_file_by_id(adr_directory: &Path, target_id: u32) -> Result<PathBuf, 
 
         if let Some(existing) = &match_path {
             return Err(ModError::DuplicateAdrId {
-                id: target_id,
+                id: format_id(target_id),
                 first: file_name_for_warning(existing.as_path()),
                 second: file_name.to_string(),
             });
@@ -186,7 +189,7 @@ fn find_adr_file_by_id(adr_directory: &Path, target_id: u32) -> Result<PathBuf, 
     }
 
     match_path.ok_or_else(|| ModError::AdrNotFound {
-        id: target_id,
+        id: format_id(target_id),
         directory: path_string(adr_directory),
     })
 }
@@ -283,10 +286,6 @@ fn file_name_for_warning(path: &Path) -> String {
     path.file_name()
         .map(|name| name.to_string_lossy().to_string())
         .unwrap_or_else(|| path_string(path))
-}
-
-fn format_id(id: u32) -> String {
-    format!("{id:03}")
 }
 
 fn current_local_date() -> String {

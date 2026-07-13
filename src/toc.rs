@@ -1,3 +1,4 @@
+use crate::id::format_id;
 use crate::resolver;
 use chrono::NaiveDate;
 use std::collections::HashSet;
@@ -169,7 +170,9 @@ fn parse_adr(file_id: u32, file_name: &str, content: &str, valid_statuses: &[Str
         && parsed_doc_id != file_id
     {
         warnings.push(format!(
-            "ID mismatch in '{file_name}': file ID {file_id:03} but header ID {parsed_doc_id:03}"
+            "ID mismatch in '{file_name}': file ID {} but header ID {}",
+            format_id(file_id),
+            format_id(parsed_doc_id)
         ));
     }
 
@@ -335,7 +338,10 @@ fn collect_sequence_warnings(records: &[AdrRecord]) -> Vec<String> {
 
     for expected in first..=last {
         if !id_set.contains(&expected) {
-            warnings.push(format!("missing ADR ID in sequence: {expected:03}"));
+            warnings.push(format!(
+                "missing ADR ID in sequence: {}",
+                format_id(expected)
+            ));
         }
     }
 
@@ -347,7 +353,7 @@ fn render_overview(records: &[AdrRecord]) -> String {
 
     for record in records {
         let title = record.title.as_deref().unwrap_or("(missing title)");
-        let title_text = format!("ADR{:03} - {}", record.id, title);
+        let title_text = format!("ADR{} - {}", format_id(record.id), title);
         let linked_title = format!("[{title_text}]({})", record.file_name);
 
         let status = record.status.as_deref().unwrap_or("UNKNOWN");

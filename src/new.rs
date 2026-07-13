@@ -1,3 +1,4 @@
+use crate::id::format_id;
 use crate::resolver;
 use crate::toc;
 use chrono::Local;
@@ -29,7 +30,7 @@ pub enum NewError {
         source: std::io::Error,
     },
     #[error("ADR id overflow while calculating next id after '{max}'")]
-    IdOverflow { max: u32 },
+    IdOverflow { max: String },
     #[error("invalid ADR title '{title}': {reason}")]
     InvalidTitle { title: String, reason: String },
     #[error("failed to create ADR file '{path}': {source}")]
@@ -113,7 +114,9 @@ fn next_adr_id(adr_directory: &Path) -> Result<u32, NewError> {
 
     max_id
         .checked_add(1)
-        .ok_or(NewError::IdOverflow { max: max_id })
+        .ok_or(NewError::IdOverflow {
+            max: format_id(max_id),
+        })
 }
 
 fn extract_id_from_filename(file_name: &str) -> Option<u32> {
@@ -166,10 +169,6 @@ fn render_template(template: &str, id: &str, title: &str, date: &str) -> String 
         .replace("`LABELS`", "")
 }
 
-fn format_id(id: u32) -> String {
-    format!("{id:03}")
-}
-
 fn current_local_date() -> String {
     Local::now().format("%Y-%m-%d").to_string()
 }
@@ -183,13 +182,6 @@ mod tests {
     use super::*;
     use assert_fs::TempDir;
     use assert_fs::prelude::*;
-
-    #[test]
-    fn format_id_is_zero_padded() {
-        assert_eq!(format_id(1), "001");
-        assert_eq!(format_id(12), "012");
-        assert_eq!(format_id(123), "123");
-    }
 
     #[test]
     fn extracts_id_from_valid_filename() {
