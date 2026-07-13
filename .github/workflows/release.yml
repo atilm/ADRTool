@@ -24,11 +24,13 @@ jobs:
             target: x86_64-unknown-linux-gnu
             binary_path: target/x86_64-unknown-linux-gnu/release/adr
             asset_name: adr-linux-x86_64
+            archive_name: adr-linux-x86_64.tar.gz
           - name: Windows x86_64
             os: windows-latest
             target: x86_64-pc-windows-msvc
             binary_path: target/x86_64-pc-windows-msvc/release/adr.exe
             asset_name: adr-windows-x86_64.exe
+            archive_name: adr-windows-x86_64.zip
     steps:
       - name: Check out tagged commit
         uses: actions/checkout@v5
@@ -53,12 +55,30 @@ jobs:
         run: |
           mkdir dist
           cp "${{ matrix.binary_path }}" "dist/${{ matrix.asset_name }}"
+          mkdir -p dist/package/completions
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cp "${{ matrix.binary_path }}" dist/package/adr.exe
+          else
+            cp "${{ matrix.binary_path }}" dist/package/adr
+          fi
+          for shell in bash zsh fish powershell; do
+            "${{ matrix.binary_path }}" completion "$shell" > "dist/package/completions/adr.$shell"
+          done
+
+      - name: Create Linux archive
+        if: runner.os == 'Linux'
+        run: tar -czf "dist/${{ matrix.archive_name }}" -C dist/package .
+
+      - name: Create Windows archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path dist/package/* -DestinationPath "dist/${{ matrix.archive_name }}"
 
       - name: Upload release asset
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.asset_name }}
-          path: dist/${{ matrix.asset_name }}
+          path: dist/*
 
   publish:
     name: Publish GitHub release

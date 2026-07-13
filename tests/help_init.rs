@@ -11,7 +11,18 @@ fn help_lists_required_commands() {
         .stdout(predicate::str::contains("init"))
         .stdout(predicate::str::contains("new"))
         .stdout(predicate::str::contains("mod"))
-        .stdout(predicate::str::contains("toc"));
+        .stdout(predicate::str::contains("toc"))
+        .stdout(predicate::str::contains("completion"));
+}
+
+#[test]
+fn completion_generates_bash_script() {
+    let mut cmd = Command::cargo_bin("adr").expect("binary exists");
+    cmd.args(["completion", "bash"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("_adr()"))
+        .stdout(predicate::str::contains("completion"));
 }
 
 #[test]

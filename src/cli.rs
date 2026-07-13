@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use clap_complete::Shell;
 
 #[derive(Debug, Parser)]
 #[command(name = "adr")]
@@ -34,4 +35,10 @@ pub enum Commands {
     },
     /// Regenerate ADR overview document
     Toc,
+    /// Generate shell completion script
+    Completion {
+        /// Shell to generate completions for
+        #[arg(value_enum)]
+        shell: Shell,
+    },
 }

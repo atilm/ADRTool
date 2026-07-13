@@ -3,11 +3,57 @@
 The cli application `adr` helps you to manage architecture decision records in 
 markdown files that can be revision controlled alongside the source code.
 
+## Installation and shell completions
+
+Release archives contain the executable and completion scripts for Bash, Zsh,
+Fish, and PowerShell. Put the executable on your `PATH`, then install the
+completion for the shell you use.
+
+On Linux, after extracting the `adr-linux-x86_64.tar.gz` archive:
+
+```sh
+sudo install -m 755 adr /usr/local/bin/adr
+sudo install -m 644 completions/adr.bash /usr/share/bash-completion/completions/adr
+sudo install -m 644 completions/adr.zsh /usr/share/zsh/site-functions/_adr
+sudo install -m 644 completions/adr.fish /usr/share/fish/vendor_completions.d/adr.fish
+```
+
+On Windows, after extracting `adr-windows-x86_64.zip`, add the directory
+containing `adr.exe` to `PATH`. To enable PowerShell completion for future
+sessions, add this line to your PowerShell profile:
+
+```powershell
+. C:\path\to\completions\adr.powershell
+```
+
+The executable can also generate a completion script directly. Redirect the
+output to the appropriate completion file, for example:
+
+```sh
+adr completion bash > adr.bash
+adr completion zsh > _adr
+adr completion fish > adr.fish
+adr completion powershell > adr.ps1
+```
+
+The `cmd.exe` shell is not supported because it does not provide a comparable
+native programmable completion mechanism.
+
 ## To show documentation on available commands
 
 ```
 adr -h
 ```
+
+## To generate shell completions
+
+```sh
+adr completion <bash|zsh|fish|powershell>
+```
+
+The command writes the selected completion script to standard output, so it
+can be redirected into a shell completion directory or sourced by a shell
+profile.
 
 ## To initialize ADRs
 

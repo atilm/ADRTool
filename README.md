@@ -21,3 +21,8 @@ these downloadable assets:
 
 - `adr-linux-x86_64`
 - `adr-windows-x86_64.exe`
+- `adr-linux-x86_64.tar.gz`, containing `adr` and shell completions
+- `adr-windows-x86_64.zip`, containing `adr.exe` and shell completions
+
+The archives include completion scripts for Bash, Zsh, Fish, and PowerShell.
+See the [Usage Guide](documentation/usage-guide.md) for installation commands.

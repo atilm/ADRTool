@@ -8,7 +8,9 @@ mod resolver;
 mod template;
 mod toc;
 
-use clap::Parser;
+use clap::{CommandFactory, Parser};
+use clap_complete::generate;
+use std::io;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
@@ -58,5 +60,9 @@ fn main() -> ExitCode {
                 ExitCode::from(1)
             }
         },
+        cli::Commands::Completion { shell } => {
+            generate(shell, &mut cli::Cli::command(), "adr", &mut io::stdout());
+            ExitCode::SUCCESS
+        }
     }
 }
