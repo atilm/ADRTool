@@ -79,7 +79,7 @@ jobs:
           cp "${{ matrix.binary_path }}" "dist/${{ matrix.artifact_name }}"
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: dist/${{ matrix.artifact_name }}
