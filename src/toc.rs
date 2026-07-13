@@ -460,7 +460,7 @@ mod tests {
         let content = "# ADR005 - Decision X\n\n* Date: 2026-07-05\n* Status: DRAFT\n* Author: Jane\n* Labels: api,auth\n";
         let record = parse_adr(
             5,
-            "005-Decision-X.md",
+            "0005-Decision-X.md",
             content,
             default_statuses().as_slice(),
         );
@@ -478,7 +478,7 @@ mod tests {
         let content = "# ADR005 - Decision X\n";
         let record = parse_adr(
             5,
-            "005-Decision-X.md",
+            "0005-Decision-X.md",
             content,
             default_statuses().as_slice(),
         );
@@ -514,7 +514,7 @@ mod tests {
         let content = "# ADR006 - Decision X\n\n* Date: 2026-07-05\n* Status: DRAFT\n* Author: Jane\n* Labels: a\n";
         let record = parse_adr(
             5,
-            "005-Decision-X.md",
+            "0005-Decision-X.md",
             content,
             default_statuses().as_slice(),
         );
@@ -532,7 +532,7 @@ mod tests {
         let content = "# ADR005 - Decision X\n\n* Date: 2026/07/05\n* Status: UNKNOWN\n* Author: \n* Labels: \n";
         let record = parse_adr(
             5,
-            "005-Decision-X.md",
+            "0005-Decision-X.md",
             content,
             default_statuses().as_slice(),
         );
@@ -562,7 +562,7 @@ mod tests {
         let content = "# ADR005 - Decision X\n\n* Date: 2026-07-05\n* Status: ACCEPTED\n* Author: \n* Labels: core\n";
         let record = parse_adr(
             5,
-            "005-Decision-X.md",
+            "0005-Decision-X.md",
             content,
             default_statuses().as_slice(),
         );
@@ -580,7 +580,7 @@ mod tests {
         let content = "# ADR005 - Decision X\n\n* Date: 2026-07-05\n* Status: SUPERSEDED by 006\n* Author: Jane\n* Labels: \n";
         let record = parse_adr(
             5,
-            "005-Decision-X.md",
+            "0005-Decision-X.md",
             content,
             default_statuses().as_slice(),
         );
@@ -598,7 +598,7 @@ mod tests {
         let records = vec![
             AdrRecord {
                 id: 1,
-                file_name: "001-a.md".to_string(),
+                file_name: "0001-a.md".to_string(),
                 title: Some("A".to_string()),
                 date: None,
                 status: None,
@@ -608,7 +608,7 @@ mod tests {
             },
             AdrRecord {
                 id: 2,
-                file_name: "002-b.md".to_string(),
+                file_name: "0002-b.md".to_string(),
                 title: Some("B".to_string()),
                 date: None,
                 status: None,
@@ -618,7 +618,7 @@ mod tests {
             },
             AdrRecord {
                 id: 4,
-                file_name: "004-c.md".to_string(),
+                file_name: "0004-c.md".to_string(),
                 title: Some("C".to_string()),
                 date: None,
                 status: None,
@@ -629,7 +629,7 @@ mod tests {
         ];
 
         let warnings = collect_sequence_warnings(records.as_slice());
-        assert_eq!(warnings, vec!["missing ADR ID in sequence: 003"]);
+        assert_eq!(warnings, vec!["missing ADR ID in sequence: 0003"]);
     }
 
     #[test]
@@ -637,7 +637,7 @@ mod tests {
         let records = vec![
             AdrRecord {
                 id: 1,
-                file_name: "001-a.md".to_string(),
+                file_name: "0001-a.md".to_string(),
                 title: Some("A".to_string()),
                 date: Some("2026-07-01".to_string()),
                 status: Some("DRAFT".to_string()),
@@ -647,7 +647,7 @@ mod tests {
             },
             AdrRecord {
                 id: 2,
-                file_name: "002-b.md".to_string(),
+                file_name: "0002-b.md".to_string(),
                 title: Some("B".to_string()),
                 date: Some("2026-07-01".to_string()),
                 status: Some("SUPERSEDED by 003".to_string()),
@@ -657,7 +657,7 @@ mod tests {
             },
             AdrRecord {
                 id: 3,
-                file_name: "003-c.md".to_string(),
+                file_name: "0003-c.md".to_string(),
                 title: Some("C".to_string()),
                 date: Some("2026-07-01".to_string()),
                 status: Some("EXPIRED".to_string()),
@@ -669,9 +669,9 @@ mod tests {
 
         let out = render_overview(records.as_slice());
 
-        assert!(out.contains("- **[ADR001 - A](001-a.md)** (api)"));
-        assert!(out.contains("- ~~[ADR002 - B](002-b.md)~~ (security) superseded by 003"));
-        assert!(out.contains("- ~~[ADR003 - C](003-c.md)~~ expired"));
+        assert!(out.contains("- **[ADR0001 - A](0001-a.md)** (api)"));
+        assert!(out.contains("- ~~[ADR0002 - B](0002-b.md)~~ (security) superseded by 003"));
+        assert!(out.contains("- ~~[ADR0003 - C](0003-c.md)~~ expired"));
     }
 
     #[test]
@@ -681,12 +681,12 @@ mod tests {
             .write_str("DRAFT\nPROPOSED\nACCEPTED\nADOPTED\nSUPERSEDED\nEXPIRED\n")
             .expect("write status");
 
-        temp.child("001-A.md")
+        temp.child("0001-A.md")
             .write_str(
                 "# ADR001 - A\n\n* Date: 2026-07-01\n* Status: DRAFT\n* Author: Jane\n* Labels: api\n",
             )
             .expect("write adr");
-        temp.child("003-C.md")
+        temp.child("0003-C.md")
             .write_str(
                 "# ADR004 - C\n\n* Date: 2026-07-01\n* Status: ACCEPTED\n* Author: Jane\n* Labels: core\n",
             )
@@ -700,7 +700,7 @@ mod tests {
             result
                 .warnings
                 .iter()
-                .any(|warning| warning.message.contains("missing ADR ID in sequence: 002"))
+                .any(|warning| warning.message.contains("missing ADR ID in sequence: 0002"))
         );
         assert!(
             result

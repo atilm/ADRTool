@@ -87,7 +87,7 @@ Acceptance criteria:
 1. Given existing ADR files with IDs `1`, `2`, and `4`, when `adr new "Decision X"` is run, then a new file with the ID `5` is created, because the ID policy is `max + 1` .
 2. Given `adr new "Decision X"` succeeds, created ADR metadata status is `DRAFT`.
 3. Given ADR directory cannot be resolved from `.adr-directory`, `adr new` fails with a non-zero exit code.
-4. Given existing ADR files with IDs `1`, `2`, and `4`, when `adr new "Decision X"` is run, then a new file `005-Decision-X.md` is created.
+4. Given existing ADR files with IDs `1`, `2`, and `4`, when `adr new "Decision X"` is run, then a new file `0005-Decision-X.md` is created.
 5. Given an ADR title with characters which cannot be used in file names, then the application exists with an error.
 
 ## 4.4 `adr mod <id> -a`

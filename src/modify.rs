@@ -76,9 +76,7 @@ pub fn run(id: u32, accept: bool, supersede: Option<u32>) -> Result<ModResult, M
     if let Some(superseded_id) = supersede
         && superseded_id == id
     {
-        return Err(ModError::SupersedeSelf {
-            id: format_id(id),
-        });
+        return Err(ModError::SupersedeSelf { id: format_id(id) });
     }
 
     let resolved = resolver::resolve_current_dir().map_err(ModError::ResolveAdrDirectory)?;
@@ -302,10 +300,10 @@ mod tests {
 
     #[test]
     fn extract_id_from_filename_handles_valid_and_invalid_cases() {
-        assert_eq!(extract_id_from_filename("001-First.md"), Some(1));
+        assert_eq!(extract_id_from_filename("0001-First.md"), Some(1));
         assert_eq!(extract_id_from_filename("1-First.md"), Some(1));
         assert_eq!(extract_id_from_filename("adr-overview.md"), None);
-        assert_eq!(extract_id_from_filename("001-First.txt"), None);
+        assert_eq!(extract_id_from_filename("0001-First.txt"), None);
         assert_eq!(extract_id_from_filename("not-an-adr.md"), None);
     }
 

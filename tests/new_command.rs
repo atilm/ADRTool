@@ -22,11 +22,11 @@ fn new_creates_first_adr_with_expected_filename_and_metadata() {
         .assert()
         .success();
 
-    let file = temp.child("docs/adr/001-Decision-X.md");
+    let file = temp.child("docs/adr/0001-Decision-X.md");
     file.assert(predicate::path::exists());
 
     let content = fs::read_to_string(file.path()).expect("read adr file");
-    assert!(content.contains("# ADR001 - Decision X"));
+    assert!(content.contains("# ADR0001 - Decision X"));
     assert!(content.contains("* Status: DRAFT"));
     assert!(content.contains("* Date: "));
 
@@ -38,13 +38,13 @@ fn new_uses_max_plus_one_policy_for_id_generation() {
     let temp = assert_fs::TempDir::new().expect("temp dir");
     init_repo(&temp);
 
-    temp.child("docs/adr/001-One.md")
+    temp.child("docs/adr/0001-One.md")
         .write_str("# ADR`001` - `One`\n")
         .expect("seed adr");
-    temp.child("docs/adr/002-Two.md")
+    temp.child("docs/adr/0002-Two.md")
         .write_str("# ADR`002` - `Two`\n")
         .expect("seed adr");
-    temp.child("docs/adr/004-Four.md")
+    temp.child("docs/adr/0004-Four.md")
         .write_str("# ADR`004` - `Four`\n")
         .expect("seed adr");
 
@@ -54,7 +54,7 @@ fn new_uses_max_plus_one_policy_for_id_generation() {
         .assert()
         .success();
 
-    temp.child("docs/adr/005-Decision-X.md")
+    temp.child("docs/adr/0005-Decision-X.md")
         .assert(predicate::path::exists());
 
     temp.close().expect("close temp dir");
@@ -65,10 +65,10 @@ fn new_silently_ignores_files_that_do_not_match_adr_filename_format() {
     let temp = assert_fs::TempDir::new().expect("temp dir");
     init_repo(&temp);
 
-    temp.child("docs/adr/001-One.md")
+    temp.child("docs/adr/0001-One.md")
         .write_str("# ADR001 - One\n")
         .expect("seed adr");
-    temp.child("docs/adr/002-Two.md")
+    temp.child("docs/adr/0002-Two.md")
         .write_str("# ADR002 - Two\n")
         .expect("seed adr");
 
@@ -91,7 +91,7 @@ fn new_silently_ignores_files_that_do_not_match_adr_filename_format() {
         .assert()
         .success();
 
-    temp.child("docs/adr/003-Decision-X.md")
+    temp.child("docs/adr/0003-Decision-X.md")
         .assert(predicate::path::exists());
 
     temp.close().expect("close temp dir");
@@ -109,7 +109,7 @@ fn new_resolves_marker_from_nested_directory() {
         .assert()
         .success();
 
-    temp.child("docs/adr/001-Decision-X.md")
+    temp.child("docs/adr/0001-Decision-X.md")
         .assert(predicate::path::exists());
 
     temp.close().expect("close temp dir");
@@ -172,7 +172,7 @@ fn new_keeps_succeeding_with_toc_trigger_hook_enabled() {
         .assert()
         .success();
 
-    temp.child("docs/adr/001-Hook-Smoke.md")
+    temp.child("docs/adr/0001-Hook-Smoke.md")
         .assert(predicate::path::exists());
     temp.child("docs/adr/adr-overview.md")
         .assert(predicate::path::exists());

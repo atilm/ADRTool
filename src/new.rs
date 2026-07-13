@@ -112,11 +112,9 @@ fn next_adr_id(adr_directory: &Path) -> Result<u32, NewError> {
         }
     }
 
-    max_id
-        .checked_add(1)
-        .ok_or(NewError::IdOverflow {
-            max: format_id(max_id),
-        })
+    max_id.checked_add(1).ok_or(NewError::IdOverflow {
+        max: format_id(max_id),
+    })
 }
 
 fn extract_id_from_filename(file_name: &str) -> Option<u32> {
@@ -185,7 +183,7 @@ mod tests {
 
     #[test]
     fn extracts_id_from_valid_filename() {
-        assert_eq!(extract_id_from_filename("005-Decision-X.md"), Some(5));
+        assert_eq!(extract_id_from_filename("0005-Decision-X.md"), Some(5));
     }
 
     #[test]
@@ -198,9 +196,9 @@ mod tests {
     #[test]
     fn next_id_uses_max_plus_one_policy() {
         let temp = TempDir::new().expect("temp dir");
-        temp.child("001-first.md").write_str("a").expect("write");
-        temp.child("002-second.md").write_str("a").expect("write");
-        temp.child("004-fourth.md").write_str("a").expect("write");
+        temp.child("0001-first.md").write_str("a").expect("write");
+        temp.child("0002-second.md").write_str("a").expect("write");
+        temp.child("0004-fourth.md").write_str("a").expect("write");
 
         let next = next_adr_id(temp.path()).expect("next id");
         assert_eq!(next, 5);
